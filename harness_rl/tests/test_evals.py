@@ -44,8 +44,11 @@ def rows():
 
 # ------------------------------------------------------------------------------------------------ sets & manifests
 
+ADAPTER_SETS = ["multihop_grid"]  # built by adapter builders (tested in test_multihop.py), not by evals/build.py
+
+
 def test_all_sets_present():
-    assert list_sets() == sorted(EXPECTED_SETS)
+    assert list_sets() == sorted(EXPECTED_SETS + ADAPTER_SETS)
 
 
 @pytest.mark.parametrize("name", EXPECTED_SETS)

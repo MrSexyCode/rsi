@@ -61,10 +61,12 @@ class VLLMHTTPBackend:
     and `logprobs: 0` returns the sampled token's logprob per position.
     """
 
-    def __init__(self, base_url: str, model: str, timeout_s: float = 3600.0):
+    def __init__(self, base_url: str, model: str, timeout_s: float = 3600.0, retries: int = 3):
         self.url = base_url.rstrip("/") + "/v1/completions"
         self.model = model
         self.timeout_s = timeout_s
+        self.retries = retries
+        self.retried = 0  # connection-level retries performed, for reporting
         self._session = None
 
     async def _sess(self):
@@ -85,11 +87,22 @@ class VLLMHTTPBackend:
                 "skip_special_tokens": False, **sp}
         if want_lp:
             body["logprobs"] = 0
-        sess = await self._sess()
-        async with sess.post(self.url, json=body) as r:
-            data = await r.json()
-            if r.status != 200:
-                raise RuntimeError(f"vLLM HTTP {r.status}: {data}")
+        import aiohttp
+        # A pooled keep-alive connection can be closed by the server just as we reuse it; nothing was generated
+        # for us then, so retrying the identical request (same seed) is safe.
+        for attempt in range(self.retries + 1):
+            sess = await self._sess()
+            try:
+                async with sess.post(self.url, json=body) as r:
+                    data = await r.json()
+                    if r.status != 200:
+                        raise RuntimeError(f"vLLM HTTP {r.status}: {data}")
+                break
+            except (aiohttp.ServerDisconnectedError, aiohttp.ClientOSError) as e:
+                if attempt == self.retries:
+                    raise
+                self.retried += 1
+                await asyncio.sleep(0.5 * (attempt + 1))
         ch = data["choices"][0]
         lps = ch["logprobs"]["token_logprobs"] if want_lp and ch.get("logprobs") else None
         stop = "aborted" if ch.get("finish_reason") == "abort" else "completed"

@@ -1,0 +1,372 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "adapter": "multihop",
+    "adapter_version": "823c7f7851a00cb185c68bda7fdd3f2dd3267832d4de3ef134d0ffe7fdf163c2",
+    "command": "python -m harness_rl.adapters.multihop.build_sets --eval",
+    "files": {
+      "harness_rl/adapters/multihop/build_sets.py": "f04754bacf739e26d933e9778290fb85849f54318b850271e1ae70d0116a4aae",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b"
+    }
+  },
+  "name": "multihop_grid",
+  "prompt_adapter": {
+    "answer_line": "Answer: <the name exactly as written in the facts, or \"cannot be determined\">",
+    "description": "rendered by adapters/multihop/render.py; meta.spec rebuilds the task",
+    "intro": "Answer the question using only the numbered facts below. All names are fictional. Answering it requires several reasoning steps.",
+    "name": "multihop_v1"
+  },
+  "prompt_tokens": {
+    "max": 5999,
+    "mean": 1382.7,
+    "min": 279
+  },
+  "prompt_tokens_per_cell": {
+    "h12/chain/high/shuffled": {
+      "max": 2644,
+      "mean": 2334.1
+    },
+    "h12/chain/low/shuffled": {
+      "max": 1693,
+      "mean": 1490.4
+    },
+    "h12/chain/none/shuffled": {
+      "max": 1497,
+      "mean": 1401.1
+    },
+    "h12/chain/very_high/shuffled": {
+      "max": 5655,
+      "mean": 4931.0
+    },
+    "h12/comparison/high/shuffled": {
+      "max": 2713,
+      "mean": 2517.9
+    },
+    "h12/comparison/low/shuffled": {
+      "max": 1727,
+      "mean": 1563.7
+    },
+    "h12/comparison/none/shuffled": {
+      "max": 1527,
+      "mean": 1473.3
+    },
+    "h12/comparison/very_high/shuffled": {
+      "max": 5999,
+      "mean": 5503.6
+    },
+    "h12/intersection/high/shuffled": {
+      "max": 2813,
+      "mean": 2508.4
+    },
+    "h12/intersection/low/shuffled": {
+      "max": 1797,
+      "mean": 1636.4
+    },
+    "h12/intersection/none/shuffled": {
+      "max": 1610,
+      "mean": 1548.2
+    },
+    "h12/intersection/very_high/shuffled": {
+      "max": 5348,
+      "mean": 4871.8
+    },
+    "h2/chain/high/shuffled": {
+      "max": 446,
+      "mean": 398.9
+    },
+    "h2/chain/low/shuffled": {
+      "max": 408,
+      "mean": 351.5
+    },
+    "h2/chain/none/shuffled": {
+      "max": 323,
+      "mean": 301.8
+    },
+    "h2/chain/very_high/shuffled": {
+      "max": 766,
+      "mean": 669.6
+    },
+    "h2/comparison/high/shuffled": {
+      "max": 508,
+      "mean": 458.8
+    },
+    "h2/comparison/low/shuffled": {
+      "max": 438,
+      "mean": 392.4
+    },
+    "h2/comparison/none/shuffled": {
+      "max": 346,
+      "mean": 329.1
+    },
+    "h2/comparison/very_high/shuffled": {
+      "max": 895,
+      "mean": 807.4
+    },
+    "h2/intersection/high/shuffled": {
+      "max": 562,
+      "mean": 506.6
+    },
+    "h2/intersection/low/shuffled": {
+      "max": 503,
+      "mean": 466.1
+    },
+    "h2/intersection/none/shuffled": {
+      "max": 459,
+      "mean": 418.4
+    },
+    "h2/intersection/very_high/shuffled": {
+      "max": 821,
+      "mean": 739.9
+    },
+    "h4/chain/high/shuffled": {
+      "max": 814,
+      "mean": 752.7
+    },
+    "h4/chain/low/shuffled": {
+      "max": 634,
+      "mean": 578.4
+    },
+    "h4/chain/none/shuffled": {
+      "max": 550,
+      "mean": 517.5
+    },
+    "h4/chain/very_high/shuffled": {
+      "max": 1558,
+      "mean": 1337.8
+    },
+    "h4/comparison/high/shuffled": {
+      "max": 887,
+      "mean": 820.4
+    },
+    "h4/comparison/low/shuffled": {
+      "max": 711,
+      "mean": 619.1
+    },
+    "h4/comparison/none/shuffled": {
+      "max": 585,
+      "mean": 553.6
+    },
+    "h4/comparison/very_high/shuffled": {
+      "max": 1732,
+      "mean": 1555.8
+    },
+    "h4/intersection/high/shuffled": {
+      "max": 942,
+      "mean": 857.7
+    },
+    "h4/intersection/low/shuffled": {
+      "max": 773,
+      "mean": 693.4
+    },
+    "h4/intersection/none/shuffled": {
+      "max": 698,
+      "mean": 643.8
+    },
+    "h4/intersection/very_high/shuffled": {
+      "max": 1531,
+      "mean": 1428
+    },
+    "h6/chain/high/shuffled": {
+      "max": 1243,
+      "mean": 1135.7
+    },
+    "h6/chain/low/shuffled": {
+      "max": 918,
+      "mean": 811.6
+    },
+    "h6/chain/none/shuffled": {
+      "max": 791,
+      "mean": 743
+    },
+    "h6/chain/very_high/shuffled": {
+      "max": 2369,
+      "mean": 2107.0
+    },
+    "h6/comparison/high/shuffled": {
+      "max": 1315,
+      "mean": 1242.7
+    },
+    "h6/comparison/low/shuffled": {
+      "max": 934,
+      "mean": 850.5
+    },
+    "h6/comparison/none/shuffled": {
+      "max": 833,
+      "mean": 777.5
+    },
+    "h6/comparison/very_high/shuffled": {
+      "max": 2758,
+      "mean": 2533.0
+    },
+    "h6/intersection/high/shuffled": {
+      "max": 1334,
+      "mean": 1257.1
+    },
+    "h6/intersection/low/shuffled": {
+      "max": 984,
+      "mean": 921.2
+    },
+    "h6/intersection/none/shuffled": {
+      "max": 920,
+      "mean": 874.6
+    },
+    "h6/intersection/very_high/shuffled": {
+      "max": 2397,
+      "mean": 2181.8
+    },
+    "h8/chain/high/shuffled": {
+      "max": 1574,
+      "mean": 1416.9
+    },
+    "h8/chain/low/shuffled": {
+      "max": 1145,
+      "mean": 1035.4
+    },
+    "h8/chain/none/shuffled": {
+      "max": 1018,
+      "mean": 954.2
+    },
+    "h8/chain/very_high/shuffled": {
+      "max": 3147,
+      "mean": 2838.8
+    },
+    "h8/comparison/high/shuffled": {
+      "max": 1595,
+      "mean": 1492.6
+    },
+    "h8/comparison/low/shuffled": {
+      "max": 1218,
+      "mean": 1094.3
+    },
+    "h8/comparison/none/shuffled": {
+      "max": 1061,
+      "mean": 1005.7
+    },
+    "h8/comparison/very_high/shuffled": {
+      "max": 3343,
+      "mean": 3134.8
+    },
+    "h8/intersection/high/shuffled": {
+      "max": 1646,
+      "mean": 1527.8
+    },
+    "h8/intersection/low/shuffled": {
+      "max": 1256,
+      "mean": 1174.5
+    },
+    "h8/intersection/none/shuffled": {
+      "max": 1177,
+      "mean": 1087.7
+    },
+    "h8/intersection/very_high/shuffled": {
+      "max": 3026,
+      "mean": 2784.0
+    }
+  },
+  "sampling": {
+    "cells": [
+      "h2/chain/none/shuffled",
+      "h2/chain/low/shuffled",
+      "h2/chain/high/shuffled",
+      "h2/chain/very_high/shuffled",
+      "h2/comparison/none/shuffled",
+      "h2/comparison/low/shuffled",
+      "h2/comparison/high/shuffled",
+      "h2/comparison/very_high/shuffled",
+      "h2/intersection/none/shuffled",
+      "h2/intersection/low/shuffled",
+      "h2/intersection/high/shuffled",
+      "h2/intersection/very_high/shuffled",
+      "h4/chain/none/shuffled",
+      "h4/chain/low/shuffled",
+      "h4/chain/high/shuffled",
+      "h4/chain/very_high/shuffled",
+      "h4/comparison/none/shuffled",
+      "h4/comparison/low/shuffled",
+      "h4/comparison/high/shuffled",
+      "h4/comparison/very_high/shuffled",
+      "h4/intersection/none/shuffled",
+      "h4/intersection/low/shuffled",
+      "h4/intersection/high/shuffled",
+      "h4/intersection/very_high/shuffled",
+      "h6/chain/none/shuffled",
+      "h6/chain/low/shuffled",
+      "h6/chain/high/shuffled",
+      "h6/chain/very_high/shuffled",
+      "h6/comparison/none/shuffled",
+      "h6/comparison/low/shuffled",
+      "h6/comparison/high/shuffled",
+      "h6/comparison/very_high/shuffled",
+      "h6/intersection/none/shuffled",
+      "h6/intersection/low/shuffled",
+      "h6/intersection/high/shuffled",
+      "h6/intersection/very_high/shuffled",
+      "h8/chain/none/shuffled",
+      "h8/chain/low/shuffled",
+      "h8/chain/high/shuffled",
+      "h8/chain/very_high/shuffled",
+      "h8/comparison/none/shuffled",
+      "h8/comparison/low/shuffled",
+      "h8/comparison/high/shuffled",
+      "h8/comparison/very_high/shuffled",
+      "h8/intersection/none/shuffled",
+      "h8/intersection/low/shuffled",
+      "h8/intersection/high/shuffled",
+      "h8/intersection/very_high/shuffled",
+      "h12/chain/none/shuffled",
+      "h12/chain/low/shuffled",
+      "h12/chain/high/shuffled",
+      "h12/chain/very_high/shuffled",
+      "h12/comparison/none/shuffled",
+      "h12/comparison/low/shuffled",
+      "h12/comparison/high/shuffled",
+      "h12/comparison/very_high/shuffled",
+      "h12/intersection/none/shuffled",
+      "h12/intersection/low/shuffled",
+      "h12/intersection/high/shuffled",
+      "h12/intersection/very_high/shuffled"
+    ],
+    "method": "item j (cell-major over the cells below) = instantiate(heldout_spec(cell, j))",
+    "n": 1800,
+    "per_cell": 30,
+    "seed_range": [
+      1073741824,
+      1090519040
+    ],
+    "train_seed_range": [
+      0,
+      1073741824
+    ]
+  },
+  "schema_version": 1,
+  "scorer": "multihop",
+  "seed": 0,
+  "sha256": "15395307440b9ae05885dc67469ef99615773f85cce44711ed00415599fff315",
+  "size": 1800,
+  "source": {
+    "adapter": "multihop",
+    "adapter_release": "v2",
+    "adapter_version": "823c7f7851a00cb185c68bda7fdd3f2dd3267832d4de3ef134d0ffe7fdf163c2",
+    "kind": "generated"
+  },
+  "source_split": "held-out seeds of the multihop world compiler (dsl.HELDOUT_SEEDS)",
+  "split_rule": {
+    "note": "Synthetic training-distribution set: the dev/final rule applies to natural sets only, so there is no final split and every item is dev.",
+    "rule": "none: all dev"
+  },
+  "splits": {
+    "dev": {
+      "n": 1800,
+      "sha256": "15395307440b9ae05885dc67469ef99615773f85cce44711ed00415599fff315"
+    },
+    "final": {
+      "n": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

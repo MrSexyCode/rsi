@@ -5,6 +5,7 @@ Per sample:
   2. run Pi (JsonSubprocessRunner) on the task prompt with the proxy URL /r/{rollout_id}/v1
   3. collect the proxy's call records; Phase 0/1 contract: exactly one model call
   4. return the call's exact prompt_ids / response_ids / logprobs to verl
+For a harness that sends no system message (vanilla), every rollout also asserts prompt ids == the direct rendering.
 
 The reward is left to verl's reward manager, which decodes response_ids exactly as on the direct path
 (SingleTurnAgentLoop). A rollout that breaks the contract (Pi error, zero or several calls) is marked invalid: its
@@ -13,7 +14,9 @@ and it contributes no gradient.
 
 Config (top-level hydra keys, added with +):
   +harness_rl.harness=vanilla            harness package name or path
-  +harness_rl.trace_dir=/path            JSONL traces of a deterministic ~5% sample of rollouts
+  +harness_rl.trace_dir=/path            metrics_<pid>.jsonl: one row per rollout (validity, calls, prompt match,
+                                         overhead, global_steps); traces_<pid>.jsonl: full traces of a deterministic
+                                         ~5% sample. scripts/pi_monitor.py summarizes both while a run trains.
   +harness_rl.trace_frac=0.05
   +harness_rl.checkpoint_id=..., +harness_rl.seed=...   copied into every trace record
 Select it with actor_rollout_ref.rollout.agent.default_agent_loop=pi_agent and
@@ -60,8 +63,12 @@ async def _worker_state(server_manager, tokenizer, config) -> dict:
             trace_dir = Path(hr["trace_dir"]) if hr.get("trace_dir") else None
             if trace_dir:
                 trace_dir.mkdir(parents=True, exist_ok=True)
+            sp = harness.manifest.get("system_prompt", {})
+            # A harness that sends no system message must produce exactly the direct path's prompt ids.
+            expect_direct = sp.get("mode") == "replace" and (harness.root / sp["file"]).read_text() == ""
             _WORKER_STATE[pid] = {
                 "harness": harness, "proxy": proxy, "runner": JsonSubprocessRunner(harness),
+                "expect_direct_render": expect_direct,
                 "trace_dir": trace_dir, "trace_frac": float(hr.get("trace_frac", 0.05)),
                 "checkpoint_id": str(hr.get("checkpoint_id", "")), "seed": hr.get("seed", None),
             }
@@ -107,6 +114,11 @@ class PiAgentLoop(AgentLoopBase):
             problems.append(f"model calls = {len(calls)}, expected 1")
         if res.assistant_messages != 1:
             problems.append(f"pi assistant messages = {res.assistant_messages}, expected 1")
+        prompt_match = None
+        if calls and st["expect_direct_render"]:
+            prompt_match = list(calls[0].prompt_ids) == await self.ct_build_initial_tokens(messages)
+            if not prompt_match:
+                problems.append("prompt ids differ from the direct rendering")
         if calls and len(calls[0].prompt_ids) > self.rollout_config.prompt_length:
             # The direct path would left-truncate; we refuse instead (data.filter_overlong_prompts normally prevents it).
             problems.append(f"prompt {len(calls[0].prompt_ids)} tokens > rollout.prompt_length")
@@ -143,8 +155,16 @@ class PiAgentLoop(AgentLoopBase):
             "pi_wall_s": wall, "pi_gen_s": gen_s, "pi_overhead_s": wall - gen_s, "pi_num_calls": len(calls),
             "harness_version": st["harness"].version, "turn_scores": [], "tool_rewards": [],
         }
-        if st["trace_dir"] is not None and _sampled(rollout_id, st["trace_frac"]):
-            self._write_trace(st, rollout_id, calls, res, extra, kwargs)
+        if st["trace_dir"] is not None:
+            row = {"t": time.time(), "rollout_id": rollout_id, "valid": int(valid), "problems": extra["pi_problems"],
+                   "calls": len(calls), "prompt_match": prompt_match, "wall_s": round(wall, 3),
+                   "gen_s": round(gen_s, 3), "overhead_s": round(wall - gen_s, 3), "n_prompt": len(prompt_ids),
+                   "n_response": len(response_ids), "finish": calls[0].finish_reason if calls else None,
+                   "global_steps": engine_tags["global_steps"]}
+            with open(st["trace_dir"] / f"metrics_{os.getpid()}.jsonl", "a") as f:
+                f.write(json.dumps(row) + "\n")
+            if _sampled(rollout_id, st["trace_frac"]):
+                self._write_trace(st, rollout_id, calls, res, extra, kwargs)
 
         return AgentLoopOutput(
             prompt_ids=prompt_ids, response_ids=response_ids, response_mask=response_mask,

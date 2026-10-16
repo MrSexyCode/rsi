@@ -34,7 +34,7 @@ import aiohttp
 from transformers import AutoTokenizer
 
 from harness_rl.core.env_paths import HARNESS_RL, VERL_DIR
-from harness_rl.evals.loader import list_sets, load_manifest, load_set, set_hash
+from harness_rl.evals.loader import SETS_DIR, list_sets, load_manifest, load_set, set_hash
 from harness_rl.evals.scoring import extract_answer, score
 from harness_rl.pi_loop.runner import HarnessPackage, JsonSubprocessRunner
 from harness_rl.proxy.backends import VLLMHTTPBackend
@@ -54,11 +54,11 @@ GROUPS = {
 }
 
 
-def resolve_sets(specs: list[str]) -> list[str]:
+def resolve_sets(specs: list[str], root: Path) -> list[str]:
     names = []
     for s in specs:
         if s.startswith("dev:"):
-            names += [n for n in list_sets() if GROUPS[s[4:]](n)]
+            names += [n for n in list_sets(root) if GROUPS[s[4:]](n)]
         else:
             names.append(s)
     return list(dict.fromkeys(names))
@@ -113,9 +113,10 @@ async def run_direct(proxy: ModelProxy, http: aiohttp.ClientSession, rid: str, p
 
 async def evaluate(args) -> dict:
     tok = AutoTokenizer.from_pretrained(args.tokenizer or args.checkpoint)
-    sets = resolve_sets(args.sets)
+    sets = resolve_sets(args.sets, args.sets_root)
     splits = ("dev", "final") if args.final else ("dev",)
-    tasks = {name: load_set(name, splits=splits, allow_final=args.final)[: args.limit] for name in sets}
+    tasks = {name: load_set(name, splits=splits, allow_final=args.final, root=args.sets_root)[: args.limit]
+             for name in sets}
 
     vllm_proc = None
     if args.launch:
@@ -198,7 +199,7 @@ async def evaluate(args) -> dict:
             "truncated": sum(r["finish_reason"] == "length" for r in rs) / max(1, len(rs)),
             "answer_found": sum(r["answer_found"] for r in rs) / max(1, len(rs)),
             "mean_response_tokens": statistics.mean(r["n_response_tokens"] or 0 for r in rs) if rs else None,
-            "eval_set_hash": set_hash(name), "splits": list(splits),
+            "eval_set_hash": set_hash(name, args.sets_root), "splits": list(splits),
         }
     return {
         "run_name": args.run_name, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -230,6 +231,7 @@ def main():
     ap.add_argument("--tokenizer", default=None, help="defaults to --checkpoint")
     ap.add_argument("--harness", default="vanilla")
     ap.add_argument("--sets", nargs="+", required=True)
+    ap.add_argument("--sets-root", type=Path, default=SETS_DIR, help="directory holding <set>/{data.jsonl,manifest.json}")
     ap.add_argument("--samples", type=int, default=4)
     ap.add_argument("--direct", action="store_true", help="bypass Pi (parity reference)")
     ap.add_argument("--final", action="store_true", help="also evaluate the reserved final split")

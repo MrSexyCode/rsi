@@ -67,11 +67,11 @@ class FakeServerManager:
         return TokenOutput(token_ids=ids, log_probs=logprobs, stop_reason="completed", num_preempted=0, extra_fields=tags)
 
 
-def make_config(harness="vanilla"):
+def make_config(harness="vanilla", trace_dir=None):
     return OmegaConf.create({
         "actor_rollout_ref": {"rollout": {"prompt_length": 1024, "response_length": RESPONSE_LENGTH}},
         "data": {"apply_chat_template_kwargs": {"enable_thinking": True}},
-        "harness_rl": {"harness": harness},
+        "harness_rl": {"harness": harness, **({"trace_dir": str(trace_dir), "trace_frac": 1.0} if trace_dir else {})},
     })
 
 
@@ -83,9 +83,9 @@ def make_loop(cls, tok, sm, config):
 SAMPLING = {"temperature": 1.0, "top_p": 1.0, "top_k": -1, "repetition_penalty": 1.0, "logprobs": True}
 
 
-async def _run_both(tok, mode, harness="vanilla"):
+async def _run_both(tok, mode, harness="vanilla", trace_dir=None):
     pal._WORKER_STATE.clear()
-    config = make_config(harness)
+    config = make_config(harness, trace_dir)
     sm_direct, sm_pi = FakeServerManager(tok, mode), FakeServerManager(tok, mode)
     kwargs = {"raw_prompt": [{"role": "user", "content": PROMPT}], "extra_info": {"index": 3}, "data_source": "omanic"}
     direct = await make_loop(SingleTurnAgentLoop, tok, sm_direct, config).run(dict(SAMPLING), **kwargs)
@@ -150,3 +150,14 @@ def test_engine_failure_gives_invalid_masked_rollout(tok):
     assert out.response_ids == [tok.convert_tokens_to_ids("<|im_end|>")] and out.response_mask == [0]
     assert tok.decode(out.response_ids, skip_special_tokens=True) == ""
     assert isinstance(out.extra_fields["min_global_steps"], int)  # never None, or the trainer's metrics crash
+
+
+def test_metrics_rows_record_invariants(tok, tmp_path):
+    _, pi, _, _ = asyncio.run(_run_both(tok, "normal", trace_dir=tmp_path))
+    rows = [json.loads(l) for p in tmp_path.glob("metrics_*.jsonl") for l in open(p)]
+    assert len(rows) == 1
+    r = rows[0]
+    assert r["valid"] == 1 and r["calls"] == 1 and r["prompt_match"] is True and r["global_steps"] == 7
+    assert r["n_response"] == len(pi.response_ids) and r["overhead_s"] >= 0
+    traces = [json.loads(l) for p in tmp_path.glob("traces_*.jsonl") for l in open(p)]
+    assert len(traces) == 1 and traces[0]["calls"][0]["prompt_ids"] == pi.prompt_ids

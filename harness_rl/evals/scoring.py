@@ -177,7 +177,17 @@ def score_ruler_vt(task: dict, response: str) -> dict:
             "n_pred": len(names), "format_ok": 1.0, "pred": pred}
 
 
+# ---------------------------------------------------------------- multihop (synthetic grid)
+
+def score_multihop(task: dict, response: str) -> dict:
+    """Rebuild the multihop Task from meta["spec"]; the adapter's verify scores extract_answer(response)."""
+    from harness_rl.adapters.multihop.reward import score_response
+
+    return score_response(task["meta"]["spec"], response)
+
+
 SCORERS = {
+    "multihop": score_multihop,
     "omanic_letter": score_omanic,
     "qa_em_f1": score_qa,
     "babilong_match": score_babilong,
