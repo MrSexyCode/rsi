@@ -1,0 +1,3 @@
+# verl agent-loop registry entry; pass with actor_rollout_ref.rollout.agent.agent_loop_config_path=<this file>
+- name: pi_agent
+  _target_: harness_rl.pi_loop.agent_loop.PiAgentLoop

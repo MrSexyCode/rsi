@@ -1,0 +1,10 @@
+{
+  "defaultThinkingLevel": "off",
+  "defaultProjectTrust": "never",
+  "retry": {"enabled": false, "provider": {"maxRetries": 0}},
+  "compaction": {"enabled": false},
+  "httpIdleTimeoutMs": 3600000,
+  "cacheWarming": "off",
+  "enableInstallTelemetry": false,
+  "quietStartup": true
+}

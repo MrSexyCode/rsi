@@ -1,0 +1,7 @@
+{
+  "api": "openai-completions",
+  "apiKey": "${ROLLOUT_ID}",
+  "headers": {"X-Rollout-Id": "${ROLLOUT_ID}"},
+  "compat": {"supportsDeveloperRole": false, "supportsStore": false},
+  "models": [{"id": "qwen3-8b", "reasoning": true, "contextWindow": 40960, "maxTokens": 32768}]
+}

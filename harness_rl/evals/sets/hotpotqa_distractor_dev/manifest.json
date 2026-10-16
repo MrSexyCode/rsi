@@ -1,0 +1,84 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets hotpotqa_distractor_dev",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "hotpotqa_distractor_dev",
+  "prompt_adapter": {
+    "answer_line": "Answer: <the short final answer only: an entity, date, or number>",
+    "description": "HotpotQA distractor: all context paragraphs in source order, numbered [P1].., then the question.",
+    "fields": [
+      "paragraphs",
+      "question"
+    ],
+    "name": "hotpotqa_ctx",
+    "template": "Answer the following question using the paragraphs below. Answering it requires several reasoning steps.\n\n{paragraphs}\n\nQuestion: {question}\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <the short final answer only: an entity, date, or number>",
+    "template_sha256": "44ea5a81c3b324b2f02abb249c5c5954c6f3de004996da87239d0fe5629b8b94",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 2852,
+    "mean": 1496.4,
+    "min": 181
+  },
+  "sampling": {
+    "method": "stratified, largest-remainder allocation, lowest sha256(seed|sample|set|id) first",
+    "n": 500,
+    "per_stratum": {
+      "bridge": 400,
+      "comparison": 100
+    },
+    "population": 7405,
+    "stratified_by": "question type (bridge/comparison)"
+  },
+  "schema_version": 1,
+  "scorer": "qa_em_f1",
+  "seed": 0,
+  "sha256": "0377ae131c3ddfe11009245f6a9ad57ac2124a9f3e7280a2256d4ecda0d351d7",
+  "size": 500,
+  "source": {
+    "file": "distractor/validation-00000-of-00001.parquet",
+    "kind": "huggingface",
+    "local_path": "/home/ubuntu/data/harness_rl_raw/hotpotqa/distractor/validation-00000-of-00001.parquet",
+    "repo": "hotpotqa/hotpot_qa",
+    "revision": "1908d6afbbead072334abe2965f91bd2709910ab",
+    "sha256": "c20b638ca82b21d04fe12e14ff417ad05153d4d215a65de54497fca4e972f7c6"
+  },
+  "source_split": "HotpotQA distractor validation (7,405; = hotpot_dev_distractor_v1.json)",
+  "split_rule": {
+    "final_fraction": "1/5",
+    "per_stratum": {
+      "bridge": {
+        "dev": 320,
+        "final": 80
+      },
+      "comparison": {
+        "dev": 80,
+        "final": 20
+      }
+    },
+    "rule": "80% dev / 20% final; n_final = round_half_up(N/5), apportioned over strata by largest remainder; lowest sha256(seed|split|set|id) in each stratum go to final",
+    "stratified_by": "question type (bridge/comparison)"
+  },
+  "splits": {
+    "dev": {
+      "n": 400,
+      "sha256": "a7914c006692fadf3850798024a4f9992845cd7dcbb21043a0b2869009de1dc9"
+    },
+    "final": {
+      "n": 100,
+      "sha256": "ec86ce1c0ba6751938064c85f6d3f696da63b3788a7a2b164e46b02498b89da6"
+    }
+  },
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

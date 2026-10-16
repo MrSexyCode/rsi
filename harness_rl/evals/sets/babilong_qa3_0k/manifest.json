@@ -1,0 +1,100 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets babilong_qa3_0k",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "babilong_qa3_0k",
+  "prompt_adapter": {
+    "answer_line": "Answer: <your answer, in the format given above>",
+    "description": "BABILong qa3 official prompt (booydar/babilong@7a6efee2) + answer line.",
+    "fields": [
+      "context",
+      "question"
+    ],
+    "name": "babilong_qa3",
+    "template": "I give you context with the facts about locations and actions of different persons hidden in some random text and a question. You need to answer the question based only on the information from the facts.\nIf a person got an item in the first location and travelled to the second location the item is also in the second location. If a person dropped an item in the first location and moved to the second location the item remains in the first location.\n\n<example>\nJohn journeyed to the bedroom. Mary grabbed the apple. Mary went back to the bathroom. Daniel journeyed to the bedroom. Daniel moved to the garden. Mary travelled to the kitchen. Where was the apple before the kitchen?\nAnswer: Before the kitchen the apple was in the bathroom.\n</example>\n<example>\nJohn went back to the bedroom. John went back to the garden. John went back to the kitchen. Sandra took the football. Sandra travelled to the garden. Sandra journeyed to the bedroom. Where was the football before the bedroom?\nAnswer: Before the bedroom the football was in the garden.\n</example>\n\nAlways return your answer in the following format: Before the $location_1$ the $item$ was in the $location_2$. Do not write anything else after that.\n\n<context>\n{context}\n</context>\n\nQuestion: {question}\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <your answer, in the format given above>",
+    "template_sha256": "8f067503fd40006fcc69fef42c8ffd2b33722efe8e14100205f88c1c9647d4b2",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 1192,
+    "mean": 628.0,
+    "min": 327
+  },
+  "sampling": {
+    "method": "all rows, file order",
+    "n": 100,
+    "population": 100
+  },
+  "schema_version": 1,
+  "scorer": "babilong_match",
+  "seed": 0,
+  "sha256": "5079eeedfdc09a07585b3d0d5c949b13249513d13f1f9baefa889b076304c31e",
+  "size": 100,
+  "source": {
+    "file": "data/qa3/0k.json",
+    "kind": "huggingface",
+    "local_path": "/home/ubuntu/data/harness_rl_raw/babilong/data/qa3/0k.json",
+    "prompts_and_metric": "https://github.com/booydar/babilong @ 7a6efee29f5cac03c3c410e6799c80fd2ffe3610 (babilong/prompts.py DEFAULT_PROMPTS/DEFAULT_TEMPLATE, babilong/metrics.py)",
+    "repo": "RMT-team/babilong",
+    "revision": "ee0d588794c7ac098062ee0d247c733d62e94fe2",
+    "sha256": "36a7bae93e535b89dd7a779621ca339674e2c2a646ceef43a505295f6d5336c2"
+  },
+  "source_split": "config 0k, split qa3 (100 samples: the whole split)",
+  "split_rule": {
+    "final_fraction": "1/5",
+    "per_stratum": {
+      "bathroom": {
+        "dev": 13,
+        "final": 3
+      },
+      "bedroom": {
+        "dev": 14,
+        "final": 3
+      },
+      "garden": {
+        "dev": 16,
+        "final": 4
+      },
+      "hallway": {
+        "dev": 12,
+        "final": 3
+      },
+      "kitchen": {
+        "dev": 14,
+        "final": 4
+      },
+      "office": {
+        "dev": 11,
+        "final": 3
+      }
+    },
+    "rule": "80% dev / 20% final; n_final = round_half_up(N/5), apportioned over strata by largest remainder; lowest sha256(seed|split|set|id) in each stratum go to final",
+    "stratified_by": "target answer"
+  },
+  "splits": {
+    "dev": {
+      "n": 80,
+      "sha256": "4fb9bc066ab06a7cef9dddfd6f9cf9150a9fd72b2e52f14b778374c6bbe4c26c"
+    },
+    "final": {
+      "n": 20,
+      "sha256": "de9fb7e8e883097aad5d90dc6f2a545989846fa6fde4f5c7a5dad853fb305f22"
+    }
+  },
+  "token_bucket": [
+    0,
+    2048
+  ],
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

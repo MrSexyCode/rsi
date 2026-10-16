@@ -1,0 +1,78 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets omanic_heldout",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "omanic_heldout",
+  "prompt_adapter": {
+    "answer_line": "Answer: <the letter of the correct option>",
+    "description": "Verbatim Omanic prompt from playground/omanic/preprocess.py (multi-hop intro).",
+    "fields": [
+      "options",
+      "question"
+    ],
+    "name": "omanic_mc",
+    "template": "Answer the following multiple-choice question. Answering it requires several reasoning steps.\n\nQuestion: {question}\n\nOptions:\n{options}\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <the letter of the correct option>",
+    "template_sha256": "a087e4dd27c52e79839fbf51ab48e62cf91822f6f06bcdb847ae9b7f9cb061a3",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 234,
+    "mean": 143.2,
+    "min": 85
+  },
+  "sampling": {
+    "method": "all rows, parquet order",
+    "n": 967,
+    "population": 967
+  },
+  "schema_version": 1,
+  "scorer": "omanic_letter",
+  "seed": 0,
+  "sha256": "fb98956e10cf04bcc797857b6c2b351613dce141bed786ca24951d65f9db1978",
+  "size": 967,
+  "source": {
+    "kind": "local_parquet",
+    "path": "/home/ubuntu/data/omanic/test_shuffled.parquet",
+    "produced_by": {
+      "call": "multi_hop_rows(OmanicBench, 'test_shuffled', shuffle=True, seed=1)",
+      "script": "/home/ubuntu/playground/omanic/preprocess.py",
+      "sha256": "60c5a2e89e0dc2d57186e6d8cc597487a2be6a1d4d7ca85123ff7fcd2deb69e3"
+    },
+    "sha256": "a830d4b1b50253404a7a57bd99a3b9787f509eb32950b53772c44d85a008092c",
+    "upstream": {
+      "file": "OmanicBench.jsonl",
+      "kind": "huggingface",
+      "local_path": "/home/ubuntu/playground/data/omanic/OmanicBench.jsonl",
+      "repo": "li-lab/Omanic",
+      "revision": "edbe032a2ea714a28a0e80ad93cfd0e6e7456e2f",
+      "sha256": "f7f1614000fe7e15768b86cc86ccd848884d5a4acfe1aa1b80a5a1e686f884d3"
+    }
+  },
+  "source_split": "OmanicBench (all 967 questions), options shuffled with seed 1 = test_shuffled.parquet",
+  "split_rule": {
+    "note": "Training-distribution (closed-book, synthetic-style) held-out set: the dev/final rule applies to natural sets only, so every item is dev.",
+    "rule": "none: all dev"
+  },
+  "splits": {
+    "dev": {
+      "n": 967,
+      "sha256": "fb98956e10cf04bcc797857b6c2b351613dce141bed786ca24951d65f9db1978"
+    },
+    "final": {
+      "n": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

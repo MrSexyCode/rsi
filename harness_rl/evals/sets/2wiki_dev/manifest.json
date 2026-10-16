@@ -1,0 +1,97 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets 2wiki_dev",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "2wiki_dev",
+  "prompt_adapter": {
+    "answer_line": "Answer: <the short final answer only: an entity, date, or number>",
+    "description": "2WikiMultihopQA: all context paragraphs in source order, numbered [P1].., then the question.",
+    "fields": [
+      "paragraphs",
+      "question"
+    ],
+    "name": "2wiki_ctx",
+    "template": "Answer the following question using the paragraphs below. Answering it requires several reasoning steps.\n\n{paragraphs}\n\nQuestion: {question}\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <the short final answer only: an entity, date, or number>",
+    "template_sha256": "44ea5a81c3b324b2f02abb249c5c5954c6f3de004996da87239d0fe5629b8b94",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 4452,
+    "mean": 1094.5,
+    "min": 324
+  },
+  "sampling": {
+    "method": "stratified, largest-remainder allocation, lowest sha256(seed|sample|set|id) first",
+    "n": 500,
+    "per_stratum": {
+      "bridge_comparison": 109,
+      "comparison": 121,
+      "compositional": 208,
+      "inference": 62
+    },
+    "population": 12576,
+    "stratified_by": "question type"
+  },
+  "schema_version": 1,
+  "scorer": "qa_em_f1",
+  "seed": 0,
+  "sha256": "7e100d10813f1bec63b0b08bf2af4c17089dc3b83cfa6892fd45b063d522d51f",
+  "size": 500,
+  "source": {
+    "kind": "url",
+    "listed_in": "https://github.com/Alab-NII/2wikimultihop README @ 13800e5be57df1b4040b9b1588c6c811779e69e9",
+    "local_path": "/home/ubuntu/data/harness_rl_raw/2wiki/data_ids_april7.zip",
+    "members": {
+      "dev.json": "79f77ae104088ea8e25b1a65dbece768d45771194663bc5660ec9a98070dadf5",
+      "id_aliases.json": "f08ffcb6c2cefca9bdbe86b4248d6ad7a7743762d3f7264c14ff0bae85726fb6"
+    },
+    "sha256": "95df2bf56fdabe034e27aebc580e02264232203cf52552f9efe8a919e5529eef",
+    "url": "https://www.dropbox.com/s/ms2m13252h6xubs/data_ids_april7.zip?dl=1"
+  },
+  "source_split": "2WikiMultihopQA dev (12,576), data_ids_april7 release",
+  "split_rule": {
+    "final_fraction": "1/5",
+    "per_stratum": {
+      "bridge_comparison": {
+        "dev": 87,
+        "final": 22
+      },
+      "comparison": {
+        "dev": 97,
+        "final": 24
+      },
+      "compositional": {
+        "dev": 166,
+        "final": 42
+      },
+      "inference": {
+        "dev": 50,
+        "final": 12
+      }
+    },
+    "rule": "80% dev / 20% final; n_final = round_half_up(N/5), apportioned over strata by largest remainder; lowest sha256(seed|split|set|id) in each stratum go to final",
+    "stratified_by": "question type"
+  },
+  "splits": {
+    "dev": {
+      "n": 400,
+      "sha256": "67c3b40fa0a293125a6638647378488b8b60dc0f4dc1fef7512800a66dbcdfff"
+    },
+    "final": {
+      "n": 100,
+      "sha256": "2aca54cf216ac4c1a4b8375724385634bd450d167d6da258d1edb1f0512b7c34"
+    }
+  },
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

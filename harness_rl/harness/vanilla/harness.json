@@ -1,0 +1,8 @@
+{
+  "name": "vanilla",
+  "description": "Harness v0: no tools, no system message (the Omanic environment sends a single user message).",
+  "pi_version": "1.2.0",
+  "system_prompt": {"mode": "replace", "file": "system_prompt.md"},
+  "thinking": "off",
+  "model": "rlproxy/qwen3-8b"
+}

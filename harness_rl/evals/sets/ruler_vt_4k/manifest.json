@@ -1,0 +1,90 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets ruler_vt_4k",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "ruler_vt_4k",
+  "prompt_adapter": {
+    "answer_line": "Answer: <the names of all the variables, separated by spaces>",
+    "description": "RULER variable tracking (NVIDIA/RULER@c3f5e3b4): one randomized ICL example, noise haystack, 1 chain x 4 hops; answer prefix replaced by the shared answer line.",
+    "fields": [
+      "context",
+      "icl_example",
+      "query"
+    ],
+    "name": "ruler_vt",
+    "template": "{icl_example}\n\nMemorize and track the chain(s) of variable assignment hidden in the following text.\n\n{context}\nQuestion: Find all variables that are assigned the value {query} in the text above.\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <the names of all the variables, separated by spaces>",
+    "template_sha256": "8c14e34f222c34ad0ea79b3b485cc15b9a9d77702f0308d9699b354e3a0ab5c2",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 4096,
+    "mean": 4088.0,
+    "min": 4073
+  },
+  "sampling": {
+    "method": "generated; sample i uses random.Random(derive_int(seed, set, 'sample', i))",
+    "n": 200
+  },
+  "schema_version": 1,
+  "scorer": "ruler_vt_recall",
+  "seed": 0,
+  "sha256": "4e9e41f60e25f9f07ae1c1645a184bd1b750724193c1159c26ce236101e68306",
+  "size": 200,
+  "source": {
+    "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+    "config": {
+      "icl_max_tokens": 500,
+      "noise": "The grass is green. The sky is blue. The sun is yellow. Here we go. There and back again.",
+      "num_chains": 1,
+      "num_hops": 4,
+      "type_haystack": "noise"
+    },
+    "files": [
+      "scripts/data/synthetic/variable_tracking.py",
+      "scripts/data/synthetic/constants.py",
+      "scripts/synthetic.yaml (vt)",
+      "scripts/eval/synthetic/constants.py"
+    ],
+    "kind": "generator",
+    "repo": "https://github.com/NVIDIA/RULER",
+    "target_tokens": 4096
+  },
+  "source_split": "synthetic, target 4096 prompt tokens",
+  "split_rule": {
+    "final_fraction": "1/5",
+    "per_stratum": {
+      "all": {
+        "dev": 160,
+        "final": 40
+      }
+    },
+    "rule": "80% dev / 20% final; n_final = round_half_up(N/5), apportioned over strata by largest remainder; lowest sha256(seed|split|set|id) in each stratum go to final",
+    "stratified_by": "none (single stratum)"
+  },
+  "splits": {
+    "dev": {
+      "n": 160,
+      "sha256": "d9a0f45835a769212a164bb681ff19780e16bbefa0ae93d07859112c63268088"
+    },
+    "final": {
+      "n": 40,
+      "sha256": "6ac5a9fc456be5af64992629149bd09e123a38f02919ca66df6ec5a99a98b6ac"
+    }
+  },
+  "token_bucket": [
+    4032,
+    4096
+  ],
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets musique_ans_dev",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "musique_ans_dev",
+  "prompt_adapter": {
+    "answer_line": "Answer: <the short final answer only: an entity, date, or number>",
+    "description": "MuSiQue-Ans: all context paragraphs in source order, numbered [P1].., then the question.",
+    "fields": [
+      "paragraphs",
+      "question"
+    ],
+    "name": "musique_ctx",
+    "template": "Answer the following question using the paragraphs below. Answering it requires several reasoning steps.\n\n{paragraphs}\n\nQuestion: {question}\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <the short final answer only: an entity, date, or number>",
+    "template_sha256": "44ea5a81c3b324b2f02abb249c5c5954c6f3de004996da87239d0fe5629b8b94",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 4773,
+    "mean": 2645.4,
+    "min": 1320
+  },
+  "sampling": {
+    "method": "stratified, largest-remainder allocation, lowest sha256(seed|sample|set|id) first",
+    "n": 500,
+    "per_stratum": {
+      "2hop": 259,
+      "3hop1": 117,
+      "3hop2": 40,
+      "4hop1": 51,
+      "4hop2": 13,
+      "4hop3": 20
+    },
+    "population": 2417,
+    "stratified_by": "hop type (id prefix)"
+  },
+  "schema_version": 1,
+  "scorer": "qa_em_f1",
+  "seed": 0,
+  "sha256": "758047d727f33614a6eec381c9d1204343805c607d27c7dea4abb0ae779d8edb",
+  "size": 500,
+  "source": {
+    "file": "musique_ans_v1.0_dev.jsonl",
+    "kind": "huggingface",
+    "local_path": "/home/ubuntu/playground/data/musique/musique_ans_v1.0_dev.jsonl",
+    "note": "local copy downloaded by the playground (revision from its HF cache)",
+    "repo": "dgslibisey/MuSiQue",
+    "revision": "c8f4f8c9465fb69d31a8eae894c3fd509c4ca321",
+    "sha256": "15fa63794d18a94ce12411aca6e2327e65b6e83b0b1490efab3f1962e48abf3b"
+  },
+  "source_split": "MuSiQue-Ans v1.0 dev (2,417; answerable only)",
+  "split_rule": {
+    "final_fraction": "1/5",
+    "per_stratum": {
+      "2hop": {
+        "dev": 207,
+        "final": 52
+      },
+      "3hop1": {
+        "dev": 94,
+        "final": 23
+      },
+      "3hop2": {
+        "dev": 32,
+        "final": 8
+      },
+      "4hop1": {
+        "dev": 41,
+        "final": 10
+      },
+      "4hop2": {
+        "dev": 10,
+        "final": 3
+      },
+      "4hop3": {
+        "dev": 16,
+        "final": 4
+      }
+    },
+    "rule": "80% dev / 20% final; n_final = round_half_up(N/5), apportioned over strata by largest remainder; lowest sha256(seed|split|set|id) in each stratum go to final",
+    "stratified_by": "hop type (id prefix)"
+  },
+  "splits": {
+    "dev": {
+      "n": 400,
+      "sha256": "b6e7fb8b20058f0ae949b42eecdc70be354716754463cf820730812721f73b76"
+    },
+    "final": {
+      "n": 100,
+      "sha256": "a35389f2818a33cd741ce0f39329147f529e475f0bcb9ea8a815e3ec2a88d932"
+    }
+  },
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

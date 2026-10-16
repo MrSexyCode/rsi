@@ -1,0 +1,104 @@
+{
+  "file_format": "one JSON object per line: id, set, split, prompt, answer, aliases, scorer, meta; sorted keys, separators (',', ':'), ensure_ascii=False, '\\n' line ends",
+  "generator": {
+    "command": "python -m harness_rl.evals.build --sets babilong_qa5_8k",
+    "files": {
+      "harness_rl/evals/build.py": "81b0220093f0d0a912fd47c86446cf779bbe2c9a8a4487dfdecf29bf0386dd5c",
+      "harness_rl/evals/common.py": "fe4ca71f58ddaa83a404cce9e6b09418ae63c03222ed45b02848b845fd332e1b",
+      "harness_rl/evals/prompts.py": "080c99ea93e86301648a688c85ed7c6f10adfad8e44a464053e32dc9e422f445",
+      "harness_rl/evals/ruler_vt.py": "48ff775f669fb21b14ffc426dca55f9f1ff3a98637acc47f6b9ed2617c3e68ab"
+    }
+  },
+  "name": "babilong_qa5_8k",
+  "prompt_adapter": {
+    "answer_line": "Answer: <your answer, in the format given above>",
+    "description": "BABILong qa5 official prompt (booydar/babilong@7a6efee2) + answer line.",
+    "fields": [
+      "context",
+      "question"
+    ],
+    "name": "babilong_qa5",
+    "template": "I will give you context with the facts about locations and their relations hidden in some random text and a question. You need to answer the question based only on the information from the facts.\n\n<example>\nMary picked up the apple there. Mary gave the apple to Fred. Mary moved to the bedroom. Bill took the milk there. Who did Mary give the apple to?\nAnswer: Fred\n</example>\n<example>\nJeff took the football there. Jeff passed the football to Fred. Jeff got the milk there. Bill travelled to the bedroom. Who gave the football?\nAnswer: Jeff\n</example>\n<example>\nFred picked up the apple there. Fred handed the apple to Bill. Bill journeyed to the bedroom. Jeff went back to the garden. What did Fred give to Bill?\nAnswer: apple\n</example>\n\nYour answer should contain only one word. Do not write anything else after that. Do not explain your answer.\n\n<context>\n{context}\n</context>\n\nQuestion: {question}\n\nReason step by step. Then end your response with exactly this line:\nAnswer: <your answer, in the format given above>",
+    "template_sha256": "5323adf8f6a0a634b2cf6e04f787d739c8f4b39b4696a9b4861872fa0f126b67",
+    "version": "1"
+  },
+  "prompt_tokens": {
+    "max": 8427,
+    "mean": 7664.8,
+    "min": 5574
+  },
+  "sampling": {
+    "method": "all rows, file order",
+    "n": 100,
+    "population": 100
+  },
+  "schema_version": 1,
+  "scorer": "babilong_match",
+  "seed": 0,
+  "sha256": "a84aeb7b59c9780924e1334d59fff9c2349fd0b8c19d07aece47a9b9577c87d8",
+  "size": 100,
+  "source": {
+    "file": "data/qa5/8k.json",
+    "kind": "huggingface",
+    "local_path": "/home/ubuntu/data/harness_rl_raw/babilong/data/qa5/8k.json",
+    "prompts_and_metric": "https://github.com/booydar/babilong @ 7a6efee29f5cac03c3c410e6799c80fd2ffe3610 (babilong/prompts.py DEFAULT_PROMPTS/DEFAULT_TEMPLATE, babilong/metrics.py)",
+    "repo": "RMT-team/babilong",
+    "revision": "ee0d588794c7ac098062ee0d247c733d62e94fe2",
+    "sha256": "8b9395ae21209e5816ef63c1de13dc8292b469e272d3ebb26e40fc7f234b7d85"
+  },
+  "source_split": "config 8k, split qa5 (100 samples: the whole split)",
+  "split_rule": {
+    "final_fraction": "1/5",
+    "per_stratum": {
+      "Bill": {
+        "dev": 12,
+        "final": 3
+      },
+      "Fred": {
+        "dev": 14,
+        "final": 4
+      },
+      "Jeff": {
+        "dev": 14,
+        "final": 3
+      },
+      "Mary": {
+        "dev": 15,
+        "final": 4
+      },
+      "apple": {
+        "dev": 11,
+        "final": 3
+      },
+      "football": {
+        "dev": 3,
+        "final": 1
+      },
+      "milk": {
+        "dev": 11,
+        "final": 2
+      }
+    },
+    "rule": "80% dev / 20% final; n_final = round_half_up(N/5), apportioned over strata by largest remainder; lowest sha256(seed|split|set|id) in each stratum go to final",
+    "stratified_by": "target answer"
+  },
+  "splits": {
+    "dev": {
+      "n": 80,
+      "sha256": "b20f9918b622d550baa602bebe39888d5586201f5e000c34ef82ea47d35c1b7d"
+    },
+    "final": {
+      "n": 20,
+      "sha256": "cb8d1156e3fbe41b67f7f4fee0bc9db1d7786eb055b766abe33cd3e9e629e7f9"
+    }
+  },
+  "token_bucket": [
+    5120,
+    9216
+  ],
+  "tokenizer": {
+    "counted": "Qwen3 chat template, one user message, add_generation_prompt, enable_thinking=True",
+    "id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+  }
+}

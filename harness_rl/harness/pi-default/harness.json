@@ -1,0 +1,8 @@
+{
+  "name": "pi-default",
+  "description": "Pi's own default system prompt with tools off; <cwd> pinned so the prompt is identical across rollouts.",
+  "pi_version": "1.2.0",
+  "system_prompt": {"mode": "pi-default", "cwd": "/workspace"},
+  "thinking": "off",
+  "model": "rlproxy/qwen3-8b"
+}

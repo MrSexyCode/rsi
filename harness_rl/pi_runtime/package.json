@@ -1,0 +1,11 @@
+{
+  "name": "harness-rl-pi-runtime",
+  "private": true,
+  "description": "Pinned Pi used by harness_rl. Bump deliberately and record in docs/log.md.",
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "1.2.0"
+  },
+  "overrides": {
+    "protobufjs": "7.6.6"
+  }
+}
