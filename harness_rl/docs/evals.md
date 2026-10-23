@@ -46,3 +46,5 @@ One row per (run, set). mean@k ± stderr over tasks. Written by `evals/run.py`.
 | 2026-10-16 | parity_base_pi_vanilla | Qwen/Qwen3-8B | pi | vanilla@ffaf8d9b | omanic_heldout | 967 | 0.5419 | 0.0139 | 0 | 0.002 | 3057 |
 | 2026-10-16 | parity_base_pi_vanilla | Qwen/Qwen3-8B | pi | vanilla@ffaf8d9b | ruler_vt_4k | 160 | 1.0000 | 0.0000 | 0 | 0.000 | 605 |
 | 2026-10-16 | parity_base_pi_vanilla | Qwen/Qwen3-8B | pi | vanilla@ffaf8d9b | ruler_vt_8k | 160 | 1.0000 | 0.0000 | 0 | 0.000 | 631 |
+| 2026-10-16 | hrl_omanic_direct_s0_step40 | /home/ubuntu/rsi/harness_rl/outputs/models/hrl_omanic_direct_s0/step_40 | pi | vanilla@ffaf8d9b | omanic_heldout | 967 | 0.5403 | 0.0138 | 0 | 0.001 | 2043 |
+| 2026-10-17 | hrl_omanic_pi_s0_step40 | /home/ubuntu/rsi/harness_rl/outputs/models/hrl_omanic_pi_s0/step_40 | pi | vanilla@ffaf8d9b | omanic_heldout | 967 | 0.5401 | 0.0138 | 0 | 0.000 | 1823 |

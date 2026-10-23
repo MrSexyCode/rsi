@@ -38,7 +38,9 @@ for END in $(seq "$CHUNK" "$CHUNK" "$TOTAL"); do
         log "chunk ending at step $END: checkpoint exists, skipping training"
     else
         log "chunk ending at step $END: training"
-        SAVE_FREQ=$CHUNK TEST_FREQ=$CHUNK "$HR/scripts/run_train.sh" "$RUN" \
+        # V1 also stops at total_epochs (epoch = step // (pool // batch); 78 steps on the 20k multihop pool) and the
+        # launcher defaults to 1, so lift that cap and let total_training_steps decide; the dataloader wraps around.
+        TOTAL_EPOCHS=${TOTAL_EPOCHS:-1000} SAVE_FREQ=$CHUNK TEST_FREQ=$CHUNK "$HR/scripts/run_train.sh" "$RUN" \
             trainer.total_training_steps=$END trainer.resume_mode=auto trainer.max_actor_ckpt_to_keep=2 \
             "$@" > /dev/null 2>&1 || true
         [ -d "$CKPTS/global_step_$END" ] || { log "no checkpoint at step $END; see outputs/logs/$RUN.log"; exit 1; }

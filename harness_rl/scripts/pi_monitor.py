@@ -62,7 +62,8 @@ def per_step(rows: list[dict]) -> list[dict]:
 
 
 def system_sample() -> dict:
-    procs = subprocess.run(["pgrep", "-fc", "pi_runtime/node_modules"], capture_output=True, text=True).stdout.strip()
+    # Pi sets process.title = "pi", so its command line no longer shows the install path: match the process name.
+    procs = subprocess.run(["pgrep", "-xc", "pi"], capture_output=True, text=True).stdout.strip()
     dirs = len(list(ROLLOUT_DIRS.iterdir())) if ROLLOUT_DIRS.exists() else 0
     return {"t": time.time(), "pi_processes": int(procs or 0), "rollout_dirs": dirs,
             "disk_free_gb": round(shutil.disk_usage("/").free / 1e9, 1)}

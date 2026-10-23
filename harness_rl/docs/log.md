@@ -410,3 +410,63 @@ G1 re-calibration → Omanic A/B → multihop × 2 seeds.
 - Difficulty range and monotone hops: pass.
 - Closed-book: pass.
 - Remaining: the smoke run (1.7), done as the 2-seed multihop run of the new parity plan.
+
+## 2026-10-17 — Revised parity step 2 (Omanic A/B): direct arm done, Pi arm running
+
+**Direct arm** (`hrl_omanic_direct_s0`: base Qwen3-8B, SEED=0 → all seeds 42, 40 steps)
+- Training score rose from 0.42 to about 0.49.
+- Step time fell from 499 s to about 290 s as responses got shorter.
+- Greedy val (n=299): 0.492 → 0.458.
+- **Boundary eval on `omanic_heldout`** (×4, T 0.6): **0.540 ± 0.014 vs base 0.543**. Training-set reward rises but held-out accuracy does not, consistent with the earlier flat Omanic run. Omanic is a weak training environment, which supports moving training to multihop.
+- First real use of the chunked driver: checkpoint at step 40, HF export (hard-link) and eval all worked.
+
+**Pi arm** (`hrl_omanic_pi_s0`), first steps
+- **Invariants hold:** steps 1–2 had 4,475 and 4,185 rollouts (DAPO resampling). Valid 100 %, 0 rollouts with ≠ 1 call, 0 prompt-id mismatches vs the direct rendering.
+- Pi overhead: p50 0.63 s, p99 13.4 s. The p99 is the startup storm at the start of each generation round, as predicted by the 0.2 benchmark.
+- **Same behaviour as direct** at steps 1 / 2:
+
+  | | Pi | Direct |
+  |---|---|---|
+  | `rollout_probs_diff_mean` | 0.00507 / 0.00506 | 0.00503 / 0.00512 |
+  | Score at step 1 | 0.412 | 0.415 |
+  | Step time at step 1 | 493 s | 499 s |
+
+- **Monitor bug:** Pi sets its process title to `pi`, so `pi_monitor` counted 0 processes. Fixed (`pgrep -x pi`); the monitor running during this run still has the old code, so rely on its rollout-dir counter.
+
+## 2026-10-21 — Omanic A/B Pi arm result; machine reset
+
+**Pi arm** (`hrl_omanic_pi_s0`) finished 40 steps.
+- **Boundary eval on `omanic_heldout`** (×4, T 0.6): **0.540 ± 0.014**. The direct arm gave 0.540 ± 0.014 and the base 0.543, so the arms agree.
+- The full-run training curves, step times and invariant summaries were never copied into this log, and the reset destroyed them (see below). What survives are the step 1–2 comparison above and the two eval rows in `docs/evals.md`.
+
+**Machine reset (2026-10-21)**
+- The VM came back fresh with only the home directory restored. Lost:
+  - `playground/verl` with its venv
+  - the HF cache (Qwen3-8B)
+  - `playground/outputs` (checkpoints, logs, metrics, rollouts)
+  - `harness_rl/outputs` (exported models, traces, eval outputs, calibration samples)
+  - uv and Node
+- Kept: this repo (uncommitted edits included), `~/data` (multihop pool, Omanic parquet, raw eval sources), the built eval sets in `evals/sets`, `pi_runtime/node_modules`, and the docs (difficulty map, evals table).
+- Rebuilt:
+  - uv 0.13.4
+  - Node 22.22.1 in `/opt`, linked as `/usr/bin/node`. `pi_env` runs Pi with `PATH=/usr/bin:/bin`, so a user-local Node gives 0 model calls (`test_eval_prompt_parity` catches this).
+  - `build-essential` (gcc 15.2). Triton/inductor compiles C stubs during vLLM's compile warm-up; without gcc every vLLM engine dies at startup with "Failed to find C compiler".
+  - verl re-cloned at `1d367a4f` (`v0.8.0-513-g1d367a4f`); its venv re-synced from the frozen lock
+  - Qwen3-8B re-downloaded at the pinned snapshot
+- There is no git remote, so the repo is a single copy.
+
+## 2026-10-21 — Parity step 3 (multihop soak, 2 seeds through Pi): launched
+
+**Setup**
+- `outputs/chunked/multihop_2seeds.sh` runs `chunked.sh` for `hrl_multihop_pi_s0`, then `hrl_multihop_pi_s1`. Settings: TASK=multihop, MODE=pi, CHUNK=50, TOTAL=200, and the default boundary evals (`multihop_grid dev:natural`, ×4).
+- **Fix:** `chunked.sh` now passes `TOTAL_EPOCHS=1000`. V1 also stops at `total_epochs`, with epoch = step // (20,000 // 256 = 78). The launcher's default of 1 would have ended the run at step 78 and failed the step-100 boundary.
+- The first two launches died in vLLM startup (no gcc, then no nvcc; see the reset entry). They were cleaned up and relaunched at 01:52.
+
+**Seed 0, first numbers**
+- **Val before train** (greedy, n=500, through Pi): EM 0.776, reward 0.645 after the overlong penalty, overlong 14.6 %, abstained 9 %.
+- **Step 1:**
+  - 5,385 rollouts (DAPO resampling). Valid 100 %, 0 rollouts with ≠ 1 call, 0 prompt-id mismatches.
+  - Pi overhead: p50 0.47 s, p99 11.0 s.
+  - Score 0.285. Prompt / response length 1,882 / 4,414 tokens.
+  - `rollout_probs_diff_mean` 0.00347, `k3_kl` 0.0005.
+  - Step time 782 s, of which generation 487 s. At this rate one 200-step seed takes about 43 h plus evals, unless responses shorten as they did on Omanic.
