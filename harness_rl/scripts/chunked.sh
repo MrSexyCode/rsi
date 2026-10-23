@@ -49,10 +49,14 @@ for END in $(seq "$CHUNK" "$CHUNK" "$TOTAL"); do
     if [ "$EVAL" = 1 ]; then
         "$HR/scripts/merge_ckpt.sh" "$RUN" "$END" >> "$LOG" 2>&1
         log "eval at step $END: $EVAL_SETS"
-        (cd "$RSI" && "$PY" -m harness_rl.evals.run --checkpoint "$HR/outputs/models/$RUN/step_$END" \
+        # A failed eval must not stop training (the exported model stays, so the eval can be rerun later).
+        if (cd "$RSI" && "$PY" -m harness_rl.evals.run --checkpoint "$HR/outputs/models/$RUN/step_$END" \
             --tokenizer Qwen/Qwen3-8B --launch --harness "${HARNESS:-vanilla}" --sets $EVAL_SETS \
-            --samples "$EVAL_SAMPLES" --run-name "${RUN}_step$END" >> "$LOG" 2>&1)
-        log "eval at step $END: done"
+            --samples "$EVAL_SAMPLES" --run-name "${RUN}_step$END" >> "$LOG" 2>&1); then
+            log "eval at step $END: done"
+        else
+            log "eval at step $END: FAILED, continuing (see outputs/evals/${RUN}_step$END/vllm.log)"
+        fi
     fi
 done
 log "all chunks done"

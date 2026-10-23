@@ -470,3 +470,35 @@ G1 re-calibration → Omanic A/B → multihop × 2 seeds.
   - Score 0.285. Prompt / response length 1,882 / 4,414 tokens.
   - `rollout_probs_diff_mean` 0.00347, `k3_kl` 0.0005.
   - Step time 782 s, of which generation 487 s. At this rate one 200-step seed takes about 43 h plus evals, unless responses shorten as they did on Omanic.
+
+## 2026-10-23 — Multihop soak: seed 0 reached step 50; lost ~2 days to a failed boundary eval
+
+**Incident**
+- Training reached step 50 on 10-21 at 13:07. The boundary eval's `vllm serve` then died at startup with `No such file or directory: 'ninja'`.
+  - `evals/run.py` starts vLLM from the venv without `uv run`, so the venv's `bin/` is not on PATH, and FlashInfer's JIT needs `ninja`. The pre-reset machine had it (or a warm `~/.cache/flashinfer`).
+- `chunked.sh` runs with `set -e`, so the failed eval stopped the driver and the GPUs sat idle until 10-23 ~20:00.
+- **Fixes:**
+  - System `ninja-build` (1.13.2) installed.
+  - A failed boundary eval is now logged and skipped, not fatal. The exported model stays on disk, so the eval can be rerun.
+  - The failed eval dir is kept as `outputs/evals/hrl_multihop_pi_s0_step50_failed_noninja`.
+- Relaunched. The step-50 eval passed and training on steps 51–100 started at 20:31. That chunk imports the `pi_loop/runner.py` from the `pi-skills` entry above. Vanilla's command is unchanged, and the run's per-rollout invariants check this.
+
+**Seed 0, steps 1–50**
+- **Invariants over all 51 steps:** 0 invalid rollouts, 0 rollouts with ≠ 1 call, 0 prompt-id mismatches.
+- **Training score:** 0.285 → 0.44 (step 10) → 0.55 (20) → 0.59 (40) → 0.63 (50).
+- `rollout_probs_diff_mean` is flat at 0.003–0.004.
+- Responses do not shorten: 3.4k–4.1k tokens. Step time rose from 660–700 s to 1,207 s at step 50, so the 43 h/seed estimate holds or is low.
+- **Greedy val** (n=500): 0.776 → **0.956** at step 50.
+- **Boundary eval at step 50** (×4, T 0.6), compared with `parity_base_pi_vanilla`:
+  - `multihop_grid`: 0.940 ± 0.005. There is no base row on this set; the 1.5 calibration on the full 288-cell grid averaged 0.744.
+  - Natural sets are flat within noise:
+
+    | Set | Base | Step 50 |
+    |---|---|---|
+    | 2wiki | 0.801 | 0.812 |
+    | musique | 0.621 | 0.631 |
+    | hotpotqa | 0.748 | 0.752 |
+    | babilong (15 sets) | | within ±1σ except qa3_0k: 0.631 → 0.547 (~2σ) |
+    | ruler_vt | 1.0 | 1.0 |
+
+- **To do:** a base-model row on `multihop_grid` (same ×4 / T 0.6), so the in-distribution gain has a proper baseline. It needs the GPUs between runs.
